@@ -7,6 +7,10 @@ on:
     branches:
       - main
 
+# Izin yang dibutuhkan agar alur kerja bisa menulis ke repositori
+permissions:
+  contents: write
+
 # Daftar pekerjaan (jobs) yang akan dijalankan
 jobs:
   build-and-deploy:
@@ -32,6 +36,4 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} # Baris ini memberikan izin
           folder: dist # Folder yang akan di-deploy
-
