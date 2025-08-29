@@ -43,6 +43,7 @@
     
           # 4. Menginstal semua dependensi yang dibutuhkan
           - name: Install dependencies
+          npm i --package-lock-only
             run: npm install
     
           # 5. Menjalankan proses build untuk membuat folder 'dist'
