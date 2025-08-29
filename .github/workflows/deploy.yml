@@ -1,26 +1,37 @@
+# Nama alur kerja
 name: Build and Deploy to GitHub Pages
+
+# Kapan alur kerja ini dijalankan
 on:
   push:
     branches:
       - main
+
+# Daftar pekerjaan (jobs) yang akan dijalankan
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      # 1. Mengunduh kode dari repositori
       - name: Checkout
         uses: actions/checkout@v3
 
+      # 2. Menyiapkan lingkungan Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3. Menginstal semua dependensi dan menjalankan build
       - name: Install and Build
         run: |
           npm install
           npm run build
 
+      # 4. Menerbitkan (deploy) ke branch gh-pages
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist
+          token: ${{ secrets.GITHUB_TOKEN }} # Baris ini memberikan izin
+          folder: dist # Folder yang akan di-deploy
+
