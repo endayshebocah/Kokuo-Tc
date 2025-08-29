@@ -35,27 +35,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          # Baris 'cache: npm' sengaja dihapus untuk memperbaiki error
 
-      # 3. Membersihkan cache npm untuk menghindari error
-      - name: Clean npm cache
-        run: npm cache clean --force
-
-      # 4. Menginstal semua dependensi yang dibutuhkan
+      # 3. Menginstal semua dependensi yang dibutuhkan
       - name: Install dependencies
-        run: |
-          npm i --package-lock-only
-          npm install
+        run: npm install
 
-      # 5. Menjalankan proses build untuk membuat folder 'dist'
+      # 4. Menjalankan proses build untuk membuat folder 'dist'
       - name: Build
         run: npm run build
 
-      # 6. Mengkonfigurasi GitHub Pages
+      # 5. Mengkonfigurasi GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      # 7. Mengunggah hasil build (folder 'dist') sebagai artefak
+      # 6. Mengunggah hasil build (folder 'dist') sebagai artefak
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
