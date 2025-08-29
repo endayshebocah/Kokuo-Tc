@@ -1,21 +1,75 @@
-name: Build and Deploy
-on:
-  push:
-    branches:
-      - main
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v3
-
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build
-
-      - name: Deploy 
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist
+    # Nama alur kerja
+    name: Deploy Vite site to GitHub Pages
+    
+    # Kapan alur kerja ini dijalankan
+    on:
+      # Dijalankan setiap kali ada push ke branch 'main'
+      push:
+        branches: ["main"]
+      # Memungkinkan untuk menjalankan secara manual dari tab Actions
+      workflow_dispatch:
+    
+    # Izin yang dibutuhkan alur kerja untuk menulis ke GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    # Pengaturan agar hanya satu proses deploy yang berjalan pada satu waktu
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    
+    # Daftar pekerjaan (jobs) yang akan dijalankan
+    jobs:
+      # Pekerjaan pertama: membangun (build) proyek
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          # 1. Mengunduh kode dari repositori
+          - name: Checkout
+            uses: actions/checkout@v4
+    
+          # 2. Menyiapkan lingkungan Node.js versi 18
+          - name: Set up Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: 18
+              cache: 'npm'
+    
+          # 3. Membersihkan cache npm untuk menghindari error
+          - name: Clean npm cache
+            run: npm cache clean --force
+    
+          # 4. Menginstal semua dependensi yang dibutuhkan
+          - name: Install dependencies
+            run: npm install
+    
+          # 5. Menjalankan proses build untuk membuat folder 'dist'
+          - name: Build
+            run: npm run build
+    
+          # 6. Mengkonfigurasi GitHub Pages
+          - name: Setup Pages
+            uses: actions/configure-pages@v4
+    
+          # 7. Mengunggah hasil build (folder 'dist') sebagai artefak
+          - name: Upload artifact
+            uses: actions/upload-pages-artifact@v3
+            with:
+              path: './dist'
+    
+      # Pekerjaan kedua: menerbitkan (deploy) ke GitHub Pages
+      deploy:
+        # Menunggu pekerjaan 'build' selesai
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+          # 1. Menerbitkan artefak yang sudah diunggah
+          - name: Deploy to GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v4
+    
